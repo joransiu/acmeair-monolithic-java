@@ -52,4 +52,4 @@ EOF
 cd acmeair-jmeter/scripts
 EXECUTION_DIR=`pwd`
 echo "Execution Directory: $EXECUTION_DIR"
-taskset -c 16-23 $JMETER_HOME/bin/jmeter -n -t $ACMEAIR_HOME/AcmeAir-v5.jmx -DusePureIDs=true -JHOST=localhost -JPORT=80 -j logName -JTHREAD=1 -JUSER=999 -JDURATION=300 -JRAMP=0
+taskset -c 16-23 $JMETER_HOME/bin/jmeter -n -t $ACMEAIR_HOME/AcmeAir-v5.jmx -DusePureIDs=true -JHOST=localhost -JPORT=80 -j logName -JTHREAD=1 -JUSER=999 -JDURATION=300 -JRAMP=0 -JPROTOCOL=https

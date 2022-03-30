@@ -10,6 +10,7 @@ acmeair-monolithic-java:
   build: .
   ports:
     - "80:9080"
+    - "443:8443"
   environment:
     - MONGO_HOST=acmeair-db
   volumes_from:
