@@ -1,0 +1,47 @@
+# Use latest jboss/base-jdk:11 image as the base
+#  Based on: https://github.com/jboss-dockerfiles/wildfly/blob/master/Dockerfile
+#FROM jboss/base-jdk:11
+FROM registry.access.redhat.com/ubi8/openjdk-11
+
+
+# Set the WILDFLY_VERSION env variable
+ENV WILDFLY_VERSION 26.0.1.Final
+ENV WILDFLY_SHA1 08908faf9ae99e5fb6374979afbffea461aadc2c
+ENV JBOSS_HOME /opt/jboss/wildfly
+
+USER root
+
+RUN microdnf install gzip
+
+# Add the WildFly distribution to /opt, and make wildfly the owner of the extracted tar content
+# Make sure the distribution is available from a well-known place
+RUN cd $HOME \
+    && curl -L -O https://github.com/wildfly/wildfly/releases/download/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
+    && sha1sum wildfly-$WILDFLY_VERSION.tar.gz | grep $WILDFLY_SHA1 \
+    && tar xf wildfly-$WILDFLY_VERSION.tar.gz \
+    && mv $HOME/wildfly-$WILDFLY_VERSION $JBOSS_HOME \
+    && rm wildfly-$WILDFLY_VERSION.tar.gz \
+    && chown -R jboss:0 ${JBOSS_HOME} \
+    && chmod -R g+rw ${JBOSS_HOME}
+
+# Ensure signals are forwarded to the JVM process correctly for graceful shutdown
+ENV LAUNCH_JBOSS_IN_BACKGROUND true
+
+# Add AcmeAir war
+COPY target/acmeair-java-2.0.0-SNAPSHOT.war /opt/jboss/wildfly/standalone/deployments/
+RUN chown jboss:0 /opt/jboss/wildfly/standalone/deployments/acmeair-java-2.0.0-SNAPSHOT.war
+
+USER jboss
+
+# Expose the ports in which we're interested
+EXPOSE 9080 8443
+
+
+ENV KEYSTORE_LOCATION=/opt/boss/wildfly/key.p12
+
+# Set the default command to run on boot
+# This will boot WildFly in standalone mode and bind to all interfaces
+#CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-c","standalone.xml","-b", "0.0.0.0", "-Djboss.http.port=9080"]
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-c","standalone-microprofile.xml","-b", "0.0.0.0", "-Djboss.http.port=9080"]
+
+
