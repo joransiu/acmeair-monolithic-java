@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+ACMEAIR_HOST=${ACMEAIR_HOST:-localhost}
+
 ACMEAIR_HOME=`pwd`
 cd ..
 
@@ -52,4 +54,8 @@ EOF
 cd acmeair-jmeter/scripts
 EXECUTION_DIR=`pwd`
 echo "Execution Directory: $EXECUTION_DIR"
-taskset -c 16-23 $JMETER_HOME/bin/jmeter -n -t $ACMEAIR_HOME/AcmeAir-v5.jmx -DusePureIDs=true -JHOST=localhost -JPORT=80 -j logName -JTHREAD=1 -JUSER=999 -JDURATION=300 -JRAMP=0 -JPROTOCOL=https
+
+echo $ACMEAIR_HOST > hosts.csv
+set -x
+#taskset -c 16-23 $JMETER_HOME/bin/jmeter -n -t $ACMEAIR_HOME/AcmeAir-v5.jmx -DusePureIDs=true -JHOST=$ACMEAIR_HOST -JPORT=80 -j logName -JTHREAD=1 -JUSER=999 -JDURATION=300 -JRAMP=0 -JPROTOCOL=https
+$JMETER_HOME/bin/jmeter -n -t $ACMEAIR_HOME/AcmeAir-v5.jmx -DusePureIDs=true -JHOST=$ACMEAIR_HOST -JPORT=80 -j $ACMEAIR_HOME/logName -JTHREAD=1 -JUSER=999 -JDURATION=300 -JRAMP=0
