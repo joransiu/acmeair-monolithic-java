@@ -1,11 +1,11 @@
 acmeair-db:
   container_name: acmeair-db
-  image: mongo
+  image: s390x/mongo
   net: ${NETWORK}
 
 acmeair-monolithic-java:
   container_name: acmeair-monolithic-java
-  dockerfile: Dockerfile
+  dockerfile: Dockerfile-wildfly
   net: ${NETWORK}
   build: .
   ports:
